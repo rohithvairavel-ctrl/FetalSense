@@ -1,0 +1,70 @@
+# FetalSense default configuration (locked architecture)
+
+sample_rate: 250
+window_samples: 512  # 2.048 s @ 250 Hz
+n_channels: 4
+patch_size: 16
+d_model: 128
+n_layers: 6
+n_heads: 4
+dropout: 0.1
+ffn_mult: 4
+
+# Ablation / architecture flags
+use_sqi: true
+sqi_mode: classic  # classic | cnn | both
+backbone: transformer  # transformer | cnn | bilstm
+quality_tokens: true
+soft_channel_weights: true
+
+# SSL
+ssl:
+  temperature: 0.1
+  proj_dim: 128
+  views: [temporal, channel]
+
+# Losses
+loss:
+  lambda_qrs: 1.0
+  lambda_ext: 0.5
+  lambda_sqi: 0.1
+  dice_weight: 0.5
+  pearson_weight: 1.0
+  mse_weight: 0.5
+
+# Peak picking / metrics
+peak:
+  refractory_ms: 180
+  threshold: 0.3
+metrics:
+  tolerances_ms: [50, 100]
+
+# Training
+train:
+  batch_size: 32
+  lr: 3.0e-4
+  weight_decay: 0.01
+  epochs: 100
+  seed: 42
+  amp: false  # CPU-safe default
+
+pretrain:
+  batch_size: 64
+  lr: 1.0e-3
+  epochs: 200
+
+finetune:
+  encoder_lr: 1.0e-4
+  head_lr: 3.0e-4
+  epochs: 100
+
+# Data roots (relative to repo or absolute)
+paths:
+  data_root: /workspace/fetalsense/data
+  downloads: /workspace/fetalsense/data/downloads
+  challenge2013: /workspace/fetalsense/data/downloads/challenge2013
+  adfecgdb: /workspace/fetalsense/data/downloads/adfecgdb
+  fecgsyndb: /workspace/fetalsense/data/downloads/fecgsyndb
+  ninfea: /workspace/fetalsense/data/downloads/ninfea
+  matonia: /workspace/fetalsense/data/downloads/matonia
+  checkpoints: /workspace/fetalsense/code/checkpoints
