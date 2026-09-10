@@ -61,7 +61,9 @@ class FetalSenseCriterion(nn.Module):
 
         # QRS
         if "p" in batch:
-            bce = F.binary_cross_entropy(p_hat.clamp(1e-6, 1 - 1e-6), batch["p"])
+            p_prob = torch.nan_to_num(p_hat, nan=0.5, posinf=1.0, neginf=0.0).clamp(1e-6, 1 - 1e-6)
+            target_p = torch.nan_to_num(batch["p"], nan=0.0, posinf=1.0, neginf=0.0).clamp(0.0, 1.0)
+            bce = F.binary_cross_entropy(p_prob, target_p)
             dice = dice_loss(p_hat, batch["p"])
             l_qrs = bce + self.dice_weight * dice
             # Quality-aware weighting

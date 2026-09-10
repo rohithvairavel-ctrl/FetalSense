@@ -26,10 +26,20 @@ def bandpass_filter(
     high_c = min(high, nyq * 0.99)
     low_c = max(low, 0.01)
     b, a = butter(order, [low_c / nyq, high_c / nyq], btype="band")
-    y = np.stack([filtfilt(b, a, ch) for ch in x], axis=0)
+    def _safe_filt(b_coef, a_coef, ch: np.ndarray) -> np.ndarray:
+        ch = np.nan_to_num(ch, nan=0.0, posinf=0.0, neginf=0.0)
+        if not np.isfinite(ch).all() or np.allclose(ch, ch[0]):
+            return ch
+        try:
+            out = filtfilt(b_coef, a_coef, ch)
+        except Exception:
+            return ch
+        return np.nan_to_num(out, nan=0.0, posinf=0.0, neginf=0.0)
+
+    y = np.stack([_safe_filt(b, a, ch) for ch in x], axis=0)
     if notch_hz is not None and 0 < notch_hz < nyq:
         bn, an = iirnotch(notch_hz, Q=30.0, fs=fs)
-        y = np.stack([filtfilt(bn, an, ch) for ch in y], axis=0)
+        y = np.stack([_safe_filt(bn, an, ch) for ch in y], axis=0)
     return y[0] if squeeze else y
 
 

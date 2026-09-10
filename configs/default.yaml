@@ -62,7 +62,7 @@ finetune:
 paths:
   data_root: /workspace/fetalsense/data
   downloads: /workspace/fetalsense/data/downloads
-  challenge2013: /workspace/fetalsense/data/downloads/challenge2013
+  challenge2013: /workspace/fetalsense/data/downloads/challenge-2013/set-a/set-a
   adfecgdb: /workspace/fetalsense/data/downloads/adfecgdb
   fecgsyndb: /workspace/fetalsense/data/downloads/fecgsyndb
   ninfea: /workspace/fetalsense/data/downloads/ninfea
